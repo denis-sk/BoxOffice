@@ -1,0 +1,212 @@
+<p *ngIf="!showsVm"><em>Loading...</em></p>
+
+<div *ngIf="showsVm">
+    <ul class="list-group">
+        <li class="list-group-item active">
+            <div class="clearfix">
+                <div class="float-left">
+                    <h4>Events</h4>
+                </div>
+                <div class="float-right">
+                    <button type="button" class="btn btn-light" (click)="createShowModal(createShowModalTemplate)">Add
+                        event</button>
+                </div>
+            </div>
+        </li>
+        <li class="list-group-item" *ngFor="let show of showsVm.list; index as i">
+            <div class="clearfix">
+                <div class="float-left">
+                    {{show.title}}
+                </div>
+                <div class="float-right">
+                    <button type="button" class="btn btn-primary"
+                        (click)="showUpdateModal(showOptionsModalTemplate, show)">Edit </button>
+                </div>
+            </div>
+
+            <table class="table table-bordered" style="margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>
+                            DateTime
+                        </th>
+                        <th>
+                            Place Limits
+                        </th>
+                        <th>
+                            <div class="clearfix">
+                                <div class="float-right">
+                                    <button class="btn btn-default" (click)="createSessionModal(createSessionModalTemplate, show)">
+                                        <fa-icon [icon]="faPlus"></fa-icon> Add session...
+                                    </button>
+                                </div>
+                            </div>
+
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let session of show.sessions; index as i">
+                        <td>{{session.time | date: 'medium'}}</td>
+                        <td>{{session.placesLimit}}</td>
+                        <td>
+                            <div class="clearfix">
+                                <div class="float-right">
+                                    <button type="button" class="btn btn-default btn-xs"
+                                        (click)="sessionUpdateModal(sessionOptionsModalTemplate, session)">
+                                        <fa-icon [icon]="faEdit"></fa-icon> Edit
+                                    </button>
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </li>
+    </ul>
+</div>
+
+
+<ng-template #showOptionsModalTemplate>
+    <div class="modal-header clearfix">
+        <h4 class="modal-title float-left">Show Options</h4>
+        <button type="button" class="close float-right" aria-label="Close" (click)="updateShowModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="inputShowTitle">Title</label>
+            <input type="text" class="form-control" id="inputShowTitle" placeholder="Event name..."
+                [ngClass]="{ 'is-invalid': showEditor.errors }" [(ngModel)]="showEditor.title" />
+        </div>
+
+        <ng-container *ngIf="showEditor.errors">
+            <div class="alert alert-danger" role="alert" *ngFor="let error of parseErrors(showEditor.errors)">
+                {{error}}
+            </div>
+        </ng-container>
+    </div>
+    <div class="modal-footer">
+        <div class="clearfix">
+            <div class="float-left">
+
+            </div>
+            <div class="float-right">
+                <button class="btn btn-default" (click)="updateShowModalRef.hide()">Cancel</button>
+                <button class="btn btn-primary" (click)="updateShowOptions()">Update</button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #sessionOptionsModalTemplate>
+    <div class="modal-header clearfix">
+        <h4 class="modal-title float-left">List Options</h4>
+        <button type="button" class="close float-right" aria-label="Close" (click)="updateSessionModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="inputListTitle">DateTime</label>
+            <input type="datetime-local" class="form-control" id="inputListTitle"
+                [ngModel]="sessionEditor.time | date:'yyyy-MM-ddThh:mm'"
+                (ngModelChange)="sessionEditor.time = $event" />
+        </div>
+        <div class="form-group">
+            <label for="inputListTitle">Place limits</label>
+            <input type="number" class="form-control" id="inputListTitle" [(ngModel)]="sessionEditor.placesLimit" />
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="clearfix">
+            <div class="float-left">
+
+            </div>
+            <div class="float-right">
+                <button class="btn btn-default" (click)="updateSessionModalRef.hide()">Cancel</button>
+                <button class="btn btn-primary" (click)="updateSessionOptions()">Update</button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #createShowModalTemplate>
+    <div class="modal-header clearfix">
+        <h4 class="modal-title float-left">New show</h4>
+        <button type="button" class="close float-right" aria-label="Close" (click)="newShowCancelled()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" placeholder="Event name..."
+                [(ngModel)]="newShowEditor.title"
+                [ngClass]="{ 'is-invalid': newShowEditor.errors && newShowEditor.errors['Title'] }"
+                (keyup.enter)="createShow()" />
+            <div *ngIf="newShowEditor.errors && newShowEditor.errors['Title']" class="invalid-feedback">
+                {{ newShowEditor.errors['Title'] }}
+            </div>
+        </div>
+        <ng-container *ngIf="newShowEditor.errors">
+            <div class="alert alert-danger" role="alert" *ngFor="let error of parseErrors(newShowEditor.errors)">
+                {{error}}
+            </div>
+        </ng-container>
+    </div>
+    <div class="modal-footer">
+        <div class="text-right">
+            <button class="btn btn-default" (click)="newShowCancelled()">Cancel</button>
+            <button class="btn btn-primary" (click)="createShow()">Create</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #createSessionModalTemplate>
+    <div class="modal-header clearfix">
+        <h4 class="modal-title float-left">New session</h4>
+        <button type="button" class="close float-right" aria-label="Close" (click)="newSessionCancelled()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="title">DateTime</label>
+            <input type="datetime-local" class="form-control" id="inputSessionDateTime"
+                [ngModel]="newSessionEditor.time | date:'yyyy-MM-ddThh:mm'"
+                (ngModelChange)="newSessionEditor.time = $event"
+                [ngClass]="{ 'is-invalid': newSessionEditor.errors && newSessionEditor.errors['Time'] }" />
+            <div *ngIf="newSessionEditor.errors && newSessionEditor.errors['Time']" class="invalid-feedback">
+                {{ newSessionEditor.errors['Time'] }}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="title">Places limit</label>
+            <input type="number" class="form-control" id="inputSessionPlacesLimit"
+                [(ngModel)]="newSessionEditor.placesLimit"
+                [ngClass]="{ 'is-invalid': newSessionEditor.errors && newSessionEditor.errors['PlacesLimit'] }" />
+
+            <div *ngIf="newSessionEditor.errors && newSessionEditor.errors['PlacesLimit']" class="invalid-feedback">
+                {{ newSessionEditor.errors['PlacesLimit'] }}
+            </div>
+        </div>
+
+        <ng-container *ngIf="newSessionEditor.errors">
+            <div class="alert alert-danger" role="alert" *ngFor="let error of parseErrors(newSessionEditor.errors)">
+                {{error}}
+            </div>
+        </ng-container>
+
+    </div>
+    <div class="modal-footer">
+        <div class="text-right">
+            <button class="btn btn-default" (click)="newSessionCancelled()">Cancel</button>
+            <button class="btn btn-primary" (click)="createSession()">Create</button>
+        </div>
+    </div>
+</ng-template>

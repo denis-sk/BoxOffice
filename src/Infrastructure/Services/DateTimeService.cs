@@ -1,0 +1,10 @@
+﻿using BoxOffice.Application.Common.Interfaces;
+using System;
+
+namespace BoxOffice.Infrastructure.Services
+{
+    public class DateTimeService : IDateTime
+    {
+        public DateTime Now => DateTime.Now;
+    }
+}
