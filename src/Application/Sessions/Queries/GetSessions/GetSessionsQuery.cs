@@ -33,9 +33,11 @@ namespace BoxOffice.Application.Sessions.Queries.GetSessions
         public async Task<SessionsVm> Handle(GetSessionsQuery request, CancellationToken cancellationToken)
         {
             var shows =  _context.Shows
+                .AsNoTracking()
                 .ProjectTo<ShowDto>(_mapper.ConfigurationProvider);
 
             var temp = _context.Sessions
+                .AsNoTracking()
                 .ProjectTo<SessionDto>(_mapper.ConfigurationProvider)
                 .Select(m => new SessionDto
                 {

@@ -18,7 +18,7 @@ namespace BoxOffice.Infrastructure.Identity
 
         public async Task<string> GetUserNameAsync(string userId)
         {
-            var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
+            var user = await _userManager.Users.AsNoTracking().FirstAsync(u => u.Id == userId);
 
             return user.UserName;
         }
@@ -37,7 +37,7 @@ namespace BoxOffice.Infrastructure.Identity
 
         public async Task<Result> DeleteUserAsync(string userId)
         {
-            var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
+            var user = _userManager.Users.AsNoTracking().SingleOrDefault(u => u.Id == userId);
 
             if (user != null)
             {

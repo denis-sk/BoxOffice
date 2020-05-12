@@ -31,6 +31,7 @@ namespace BoxOffice.Application.Sessions.Queries.GetSession
         {
             var session =
                 await _context.Sessions
+                    .AsNoTracking()
                     .ProjectTo<SessionVm>(_mapper.ConfigurationProvider)
                     .OrderBy(t => t.Time)
                     .Where(m => m.Id == request.Id)
@@ -41,7 +42,7 @@ namespace BoxOffice.Application.Sessions.Queries.GetSession
                         ShowId = m.ShowId,
                         PlacesLimit = m.PlacesLimit,
                         FreePlaces = m.PlacesLimit -
-                                     _context.Orders.Where(o => o.SessionId == m.Id).Sum(o => o.Tickets.Count())
+                                     _context.Orders.AsNoTracking().Where(o => o.SessionId == m.Id).Sum(o => o.Tickets.Count())
                     })
                     .FirstOrDefaultAsync(cancellationToken);
 

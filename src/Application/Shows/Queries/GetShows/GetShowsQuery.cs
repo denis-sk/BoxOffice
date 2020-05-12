@@ -33,6 +33,7 @@ namespace BoxOffice.Application.Shows.Queries.GetShows
             var shows = new ShowsVm
             {
                 List = await _context.Shows
+                    .AsNoTracking()
                     .ProjectTo<ShowsDto>(_mapper.ConfigurationProvider)
                     .OrderByDescending(m => m.Id)
                     .ToListAsync(cancellationToken)
